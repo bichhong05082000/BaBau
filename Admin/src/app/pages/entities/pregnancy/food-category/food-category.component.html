@@ -1,0 +1,409 @@
+<div class="row">
+  <div class="col-xxl-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="row g-3 justify-content-between">
+          <div class="col-xxl-4 col-sm-6">
+            <div class="search-box">
+              <ng-select
+                [items]="rootCategoryData"
+                bindLabel="name"
+                bindValue="_id"
+                [multiple]="false"
+                [(ngModel)]="idRootCategory"
+                placeholder="Choose FoodCategory"
+                (change)="getFoodCategoryId()"
+              ></ng-select>
+            </div>
+          </div>
+
+          <div class="col-2 d-flex">
+            <button
+              type="button"
+              class="btn btn-primary w-100 mx-2"
+              (click)="openModal(content)"
+            >
+              <i class="ri-add-line"></i> Add
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row job-list-row" id="companies-list">
+      <div
+        *ngFor="let data of foodCategoryData; let i = index"
+        class="col-xxl-3 col-md-4"
+      >
+        <div class="card companiesList-card">
+          <div class="card-body">
+            <div class="avatar-xxl mx-auto">
+              <div class="avatar-title bg-light rounded">
+                <img
+                  style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 5px;
+                  "
+                  src="{{
+                    data.image
+                      ? data.image
+                      : 'assets/images/companies/img-3.png'
+                  }}"
+                  alt=""
+                  class="avatar-square companyLogo-img"
+                />
+              </div>
+            </div>
+            <div class="text-center">
+              <a href="javascript:void(0);">
+                <h5 class="mt-3 company-name">
+                  {{ data.name | uppercase }} ({{
+                    data.idRoot.name | uppercase
+                  }})
+                </h5>
+              </a>
+            </div>
+            <div class="d-flex justify-content-center align-items-md-baseline">
+              <button
+                type="button"
+                class="btn btn-soft-danger viewcompany-list mx-2"
+                (click)="confirm(deleteModel, data._id)"
+              >
+                <span class="vacancy"><i class="ri-delete-bin-fill"></i></span>
+              </button>
+              <button
+                type="button"
+                class="btn btn-soft-primary viewcompany-list"
+                (click)="editDataGet(content, data)"
+              >
+                <span class="vacancy"><i class="ri-edit-box-line"></i> </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="elmLoader">
+    <div class="spinner-border text-primary avatar-sm" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>
+
+<ng-template #deleteModel let-modal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+        id="deleteRecord-close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="mt-2 text-center">
+        <lord-icon
+          src="https://cdn.lordicon.com/gsqxdxog.json"
+          trigger="loop"
+          colors="primary:#405189,secondary:#f06548"
+          style="width: 90px; height: 90px"
+        ></lord-icon>
+        <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+          <h4>You are about to delete a FoodCategory ?</h4>
+          <p class="text-muted mx-4 mb-0">
+            Deleting your FoodCategory will remove all of your information from
+            our database.
+          </p>
+        </div>
+      </div>
+      <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+        <button
+          class="btn btn-link link-primary fw-medium text-decoration-none"
+          data-bs-dismiss="modal"
+          id="deleteRecord-close"
+          (click)="modal.close('Close click')"
+        >
+          <i class="ri-close-line me-1 align-middle"></i> Close
+        </button>
+        <button
+          type="button"
+          class="btn w-sm btn-danger"
+          id="delete-product"
+          (click)="deleteData(deleteId)"
+          (click)="modal.close('Close click')"
+        >
+          Yes, Delete It!
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- /.modal-content -->
+</ng-template>
+
+<ng-template #content role="document" let-modal>
+  <div class="modal-header bg-soft-info p-3">
+    <h5 class="modal-title" id="exampleModalLabel">Add FoodCategory</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      aria-label="Close"
+      id="close-modal"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <form
+    (ngSubmit)="saveFoodCategory()"
+    [formGroup]="foodCategoryForm"
+    class="tablelist-form"
+    autocomplete="off"
+  >
+    <div class="modal-body">
+      <input type="hidden" id="id-field" />
+      <div class="row g-3">
+        <div class="col-lg-12">
+          <div class="text-center">
+            <div class="position-relative d-inline-block">
+              <input type="hidden" name="id" value="" formControlName="ids" />
+              <div class="position-absolute bottom-0 end-0">
+                <label
+                  for="customer-image-input"
+                  class="mb-0"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="Select Image"
+                >
+                  <div class="avatar-xs cursor-pointer">
+                    <div
+                      class="avatar-title bg-light border rounded-circle text-muted"
+                    >
+                      <i class="ri-image-fill"></i>
+                    </div>
+                  </div>
+                </label>
+                <input
+                  class="form-control d-none"
+                  id="customer-image-input"
+                  type="file"
+                  accept="image/png, image/gif, image/jpeg"
+                  formControlName="image"
+                  [ngClass]="{
+                    'is-invalid': submitted && form['image'].errors
+                  }"
+                  (change)="fileChange($event)"
+                />
+                <div
+                  *ngIf="submitted && form['image'].errors"
+                  class="invalid-feedback"
+                  align="left"
+                >
+                  <div *ngIf="form['image'].errors['required']">
+                    Image is required
+                  </div>
+                </div>
+              </div>
+              <div class="avatar-xxl p-1">
+                <div class="avatar-title bg-light">
+                  <img
+                    src="assets/images/users/user-dummy-img.jpg"
+                    id="customer-img"
+                    class="avatar-xl avatar-title object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label for="name-field" class="form-label required">Name</label>
+            <input
+              type="text"
+              id="customername-field"
+              class="form-control"
+              placeholder="Enter name"
+              required
+              formControlName="name"
+              [ngClass]="{
+                'is-invalid': submitted && form['name'].errors
+              }"
+            />
+            <div
+              *ngIf="submitted && form['name'].errors"
+              class="invalid-feedback"
+              align="left"
+            >
+              <div *ngIf="form['name'].errors['required']">
+                Name is required
+              </div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <label for="description-field" class="form-label required"
+              >Description</label
+            >
+            <textarea
+              class="form-control"
+              id="making-field"
+              rows="4"
+              placeholder="Enter description"
+              formControlName="description"
+              [ngClass]="{
+                'is-invalid': submitted && form['description'].errors
+              }"
+            ></textarea>
+            <div
+              *ngIf="submitted && form['description']!.errors"
+              class="invalid-feedback"
+              align="left"
+            >
+              <div *ngIf="form['description']?.errors?.required">
+                Description is required
+              </div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <label for="description-field" class="form-label required"
+              >Root Category</label
+            >
+            <ng-select
+              [items]="rootCategoryData"
+              [multiple]="false"
+              bindLabel="name"
+              bindValue="_id"
+              placeholder="Choose root category"
+              formControlName="idRoot"
+              [ngClass]="{
+                'is-invalid': submitted && form['idRoot'].errors
+              }"
+            ></ng-select>
+            <div
+              *ngIf="submitted && form['idRoot'].errors"
+              class="invalid-feedback"
+              align="left"
+            >
+              <div *ngIf="form['idRoot'].errors['required']">
+                Root category is required
+              </div>
+            </div>
+          </div>
+
+          <div formArrayName="monthlyData">
+            <div
+              *ngFor="let item of monthlyData.controls; let i = index"
+              class="mt-3"
+              [formGroupName]="i"
+            >
+              <div class="d-flex justify-content-between">
+                <label for="month-field" class="form-label required"
+                  >Monthly (<span>{{ checkMonthly(i) }}</span
+                  >)</label
+                >
+
+                <i
+                  class="ri-delete-bin-fill cursor"
+                  (click)="removeItem(i)"
+                ></i>
+              </div>
+
+              <input
+                type="text"
+                id="customermonth-field"
+                class="form-control"
+                placeholder="Enter month"
+                formControlName="month"
+                [readOnly]="true"
+                [ngClass]="{
+                  'is-invalid': submitted && item.get('month')!.errors
+                }"
+              />
+              <div class="mt-3">
+                <label for="description-field" class="form-label required"
+                  >Status</label
+                >
+                <ng-select
+                  [items]="selectValues"
+                  [multiple]="false"
+                  bindLabel="name"
+                  bindValue="_id"
+                  placeholder="Choose status"
+                  formControlName="status"
+                  [ngClass]="{
+                    'is-invalid': submitted && item.get('status')!.errors
+                  }"
+                ></ng-select>
+                <div
+                  *ngIf="submitted && item.get('status')!.errors"
+                  class="invalid-feedback"
+                  align="left"
+                >
+                  <div *ngIf="item?.get('status')?.errors?.required">
+                    Status is required
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <label for="description-field" class="form-label required"
+                  >Description</label
+                >
+                <textarea
+                  class="form-control"
+                  id="making-field"
+                  rows="4"
+                  placeholder="Enter description"
+                  formControlName="description"
+                  [ngClass]="{
+                    'is-invalid': submitted && item.get('description')!.errors
+                  }"
+                ></textarea>
+                <div
+                  *ngIf="submitted && item.get('description')!.errors"
+                  class="invalid-feedback"
+                  align="left"
+                >
+                  <div *ngIf="item?.get('description')?.errors?.required">
+                    Description is required
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="hstack gap-2 justify-content-end">
+        <button
+          type="button"
+          class="btn btn-light"
+          data-bs-dismiss="modal"
+          (click)="modal.close('Close click')"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="add-btn"
+          (click)="addItem()"
+          [disabled]="monthlyData.length === 3"
+        >
+          Add Monthly
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          id="add-btn"
+          [disabled]="monthlyData.length < 3"
+        >
+          Add FoodCategory
+        </button>
+      </div>
+    </div>
+  </form>
+</ng-template>
